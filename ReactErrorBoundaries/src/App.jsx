@@ -1,33 +1,67 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
-import "./App.css";
+import { Component, useEffect, useState } from 'react';
+import './App.css';
+
+const s = {
+  style: {
+    fontSize: '80px',
+  },
+};
+
+class MyErrorBoundary extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(error) {
+    // Atualiza o state para que a próxima renderização mostre a UI alternativa.
+    return { hasError: true };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    // Você também pode registrar o erro em um serviço de relatórios de erro
+    // console.log(error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      // Você pode renderizar qualquer UI alternativa
+      return <p {...s}>Ferrou Cooorre Maluco!</p>;
+    }
+
+    return this.props.children;
+  }
+}
+
+const ItWillThrowError = () => {
+  const [counter, setCounter] = useState(0);
+  useEffect(() => {
+    if (counter > 3) {
+      throw new Error('Que Chato!!!');
+    }
+  }, [counter]);
+
+  return (
+    <div>
+      <button onClick={() => setCounter((s) => s + 1)}>
+        Click to Increase {counter}
+      </button>
+    </div>
+  );
+};
 
 function App() {
-  const [count, setCount] = useState(0);
-
   return (
     <>
       <div>
-        <a href="https://vitejs.dev" target="_blank" rel="noreferrer">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank" rel="noreferrer">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+        <h1 {...s}>Olá</h1>
+        <MyErrorBoundary>
+          <ItWillThrowError />
+        </MyErrorBoundary>
+        <MyErrorBoundary>
+          <ItWillThrowError />
+        </MyErrorBoundary>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
     </>
   );
 }
